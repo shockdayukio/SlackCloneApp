@@ -2,16 +2,36 @@
   <div class="app-layout">
     <div class="sidebar">
         <p>チャンネル一覧</p>
-        <p>#general</p>
-        <p>#history</p>
-        <p>#z-mat-random</p>
-        <p></p>
+        <p v-for="channel in channels" v-bind:key="channel.name">
+          <nuxt-link :to="`/channels/${channel.id}`">{{ channel.name }}</nuxt-link>
+        </p>
     </div>
     <div class="main-content">
       <nuxt />
     </div>
   </div>
 </template>
+
+<script>
+import { db }  from "~/plugins/firebase"
+
+export default {
+  data() {
+    return {
+      channels: []
+    }
+  },
+  mounted() {
+    db.collection('channels').get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          this.channels.push({id: doc.id, ...doc.data()})
+        })
+      })
+  }
+}
+</script>
+
 
 <style>
 html {
